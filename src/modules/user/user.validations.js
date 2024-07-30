@@ -7,7 +7,7 @@ const signUpSchema = joi.object({
   password: joi
     .string()
     .required()
-    .pattern(/^(?=.*?[a-z])(?=.*?[0-9]).{8,}&/),
+    .pattern(/^(?=.*?[a-z])(?=.*?[0-9]).{8,}$/),
   mobileNumber: joi.string().required(),
   recoveryEmail: joi.string().required().email(),
   dateOfBirth: joi
@@ -21,7 +21,15 @@ const signInSchema = joi.object({
   password: joi
     .string()
     .required()
-    .pattern(/^(?=.*?[a-z])(?=.*?[0-9]).{8,}&/),
+    .pattern(/^(?=.*?[a-z])(?=.*?[0-9]).{8,}$/),
 });
 
-export { signUpSchema, signInSchema };
+const updatePasswordSchema = joi.object({
+  newPassword: joi
+    .string()
+    .required()
+    .pattern(/^(?=.*?[a-z])(?=.*?[0-9]).{8,}$/),
+  confirmNewPassword: joi.valid(joi.ref("newPassword")),
+});
+
+export { signUpSchema, signInSchema, updatePasswordSchema };

@@ -1,7 +1,9 @@
 import { Router } from "express";
 import * as UC from "./user.controllers.js";
+import * as UV from "./user.validations.js";
 import { checkIfUser } from "../../middlewares/checkIfUser.middleware.js";
 import { auth } from "../../middlewares/auth.middleware.js";
+import { validate } from "../../middlewares/validate.middleware.js";
 
 const userRouter = Router();
 
@@ -14,6 +16,12 @@ userRouter.get(
   "/getAccountDataForAnotherUser/:anotherId",
   auth("user"),
   UC.getAccountDataForAnotherUser
+);
+userRouter.patch(
+  "/updatePassword",
+  validate(UV.updatePasswordSchema),
+  auth("user"),
+  UC.updatePassword
 );
 
 export default userRouter;

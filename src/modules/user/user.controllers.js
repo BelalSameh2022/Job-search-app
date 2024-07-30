@@ -150,15 +150,18 @@ const getAccountDataForAnotherUser = asyncErrorHandler(async (req, res) => {
 
 const updatePassword = asyncErrorHandler(async (req, res) => {
   const { userId } = req.user;
-  const { anotherId } = req.params;
+  const { newPassword } = req.body;
 
-  const user = await User.findOne({ _id: userId, status: "online" });
-  if (!user) throw new AppError("Unauthorized", 401);
+  const hashedPassword = bcrypt.hashSync(newPassword, +process.env.saltRounds);
 
-  const data = await User.findById(anotherId);
-  if (!data) throw new AppError("User is not found", 404);
+  const user = await User.findOneAndUpdate(
+    { _id: userId, status: "online" },
+    { password: hashedPassword },
+    { new: true }
+  );
+  if (!user) throw new AppError("User is not found", 404);
 
-  res.status(200).json({ message: "success", data });
+  res.status(200).json({ message: "success", user });
 });
 
 export {
@@ -168,5 +171,5 @@ export {
   deleteAccount,
   getAccountData,
   getAccountDataForAnotherUser,
-  updatePassword
+  updatePassword,
 };
