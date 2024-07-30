@@ -34,5 +34,9 @@ userRouter.patch(
   validate(UV.resetPasswordSchema),
   UC.resetPassword
 );
+userRouter.get(
+  "/getAccountsByRecoveryEmail",
+  UC.getAccountsByRecoveryEmail
+);
 
 export default userRouter;

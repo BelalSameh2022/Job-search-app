@@ -213,6 +213,15 @@ const resetPassword = asyncErrorHandler(async (req, res) => {
   res.status(200).json({ message: "success", user });
 });
 
+const getAccountsByRecoveryEmail = asyncErrorHandler(async (req, res) => {
+  const { recoveryEmail } = req.query;
+
+  const users = await User.find({ recoveryEmail });
+  if (!users) throw new AppError("Users not found", 404);
+
+  res.status(200).json({ message: "success", users });
+});
+
 export {
   signUp,
   signIn,
@@ -224,4 +233,5 @@ export {
   forgetPassword,
   confirmOtp,
   resetPassword,
+  getAccountsByRecoveryEmail,
 };
