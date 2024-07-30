@@ -23,5 +23,16 @@ userRouter.patch(
   auth("user"),
   UC.updatePassword
 );
+userRouter.patch(
+  "/forgetPassword",
+  validate(UV.forgetPasswordSchema),
+  UC.forgetPassword
+);
+userRouter.patch("/confirmOtp", validate(UV.confirmOtpSchema), UC.confirmOtp);
+userRouter.patch(
+  "/resetPassword",
+  validate(UV.resetPasswordSchema),
+  UC.resetPassword
+);
 
 export default userRouter;

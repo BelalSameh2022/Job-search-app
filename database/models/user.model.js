@@ -71,6 +71,14 @@ const userSchema = new Schema(
       enum: ["online", "offline"],
       default: "offline",
     },
+    OTP: {
+      type: String,
+      default: "",
+    },
+    confirmOTP: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true, versionKey: false }
 );

@@ -24,7 +24,9 @@
 
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { customAlphabet } from "nanoid";
 import { AppError, asyncErrorHandler } from "../../utils/error.js";
+import { sendEmail } from "../../utils/email.js";
 import User from "../../../database/models/user.model.js";
 
 const signUp = asyncErrorHandler(async (req, res) => {
@@ -164,6 +166,53 @@ const updatePassword = asyncErrorHandler(async (req, res) => {
   res.status(200).json({ message: "success", user });
 });
 
+const forgetPassword = asyncErrorHandler(async (req, res) => {
+  const { identifier } = req.body;
+
+  const nanoid = customAlphabet("0123456789", 5);
+  const OTP = nanoid();
+
+  const user = await User.findOneAndUpdate(
+    { $or: [{ email: identifier }, { mobileNumber: identifier }] },
+    { OTP, confirmOTP: false },
+    { new: true }
+  );
+  if (!user) throw new AppError("User is not found", 404);
+
+  sendEmail(user.email, OTP);
+
+  res.status(200).json({ message: "success", user });
+});
+
+const confirmOtp = asyncErrorHandler(async (req, res) => {
+  const { OTP } = req.body;
+
+  const user = await User.findOneAndUpdate(
+    { OTP },
+    { OTP: null, confirmOTP: true },
+    { new: true }
+  );
+  if (!user) throw new AppError("Invalid OTP", 400);
+
+  res.status(200).json({ message: "success", user });
+});
+
+const resetPassword = asyncErrorHandler(async (req, res) => {
+  const { identifier, newPassword } = req.body;
+
+  const user = await User.findOneAndUpdate(
+    {
+      $or: [{ email: identifier }, { mobileNumber: identifier }],
+      confirmOTP: true,
+    },
+    { password: bcrypt.hashSync(newPassword, +process.env.saltRounds) },
+    { new: true }
+  );
+  if (!user) throw new AppError("User not found or OTP not confirmed", 403);
+
+  res.status(200).json({ message: "success", user });
+});
+
 export {
   signUp,
   signIn,
@@ -172,4 +221,7 @@ export {
   getAccountData,
   getAccountDataForAnotherUser,
   updatePassword,
+  forgetPassword,
+  confirmOtp,
+  resetPassword,
 };

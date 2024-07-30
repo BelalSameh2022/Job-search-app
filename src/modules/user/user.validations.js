@@ -32,4 +32,28 @@ const updatePasswordSchema = joi.object({
   confirmNewPassword: joi.valid(joi.ref("newPassword")),
 });
 
-export { signUpSchema, signInSchema, updatePasswordSchema };
+const forgetPasswordSchema = joi.object({
+  identifier: joi.string().required(),
+});
+
+const confirmOtpSchema = joi.object({
+  OTP: joi.string().required().length(5),
+});
+
+const resetPasswordSchema = joi.object({
+  identifier: joi.string().required(),
+  newPassword: joi
+    .string()
+    .required()
+    .pattern(/^(?=.*?[a-z])(?=.*?[0-9]).{8,}$/),
+  confirmNewPassword: joi.valid(joi.ref("newPassword")),
+});
+
+export {
+  signUpSchema,
+  signInSchema,
+  updatePasswordSchema,
+  forgetPasswordSchema,
+  confirmOtpSchema,
+  resetPasswordSchema,
+};
