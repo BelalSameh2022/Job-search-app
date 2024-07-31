@@ -16,9 +16,9 @@ const companySchema = new Schema(
     companyName: {
       type: String,
       required: true,
-      unique: true,
       lowercase: true,
       trim: true,
+      unique: true,
     },
     description: {
       type: String,
@@ -36,7 +36,7 @@ const companySchema = new Schema(
       trim: true,
     },
     numberOfEmployees: {
-      type: Number,
+      type: String,
       required: true,
     },
     companyEmail: {
@@ -50,7 +50,6 @@ const companySchema = new Schema(
       type: Types.ObjectId,
       ref: "User",
       required: true,
-      trim: true,
     },
   },
   { timestamps: true, versionKey: false }

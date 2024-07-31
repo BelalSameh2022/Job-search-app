@@ -1,7 +1,7 @@
 import { Router } from "express";
 import * as UC from "./user.controllers.js";
 import * as UV from "./user.validations.js";
-import { checkIfUser } from "../../middlewares/checkIfUser.middleware.js";
+import { checkIfUser } from "../../middlewares/checkIfExists.middleware.js";
 import { auth } from "../../middlewares/auth.middleware.js";
 import { validate } from "../../middlewares/validate.middleware.js";
 
