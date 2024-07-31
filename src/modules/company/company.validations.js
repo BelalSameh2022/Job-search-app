@@ -1,7 +1,7 @@
 import joi from "joi";
 
 const addCompanySchema = joi.object({
-  companyName: joi.string().required().alphanum().min(3).max(20),
+  companyName: joi.string().required().pattern(/^[a-zA-Z0-9 ]{3,20}$/),
   description: joi.string().required(),
   industry: joi.string().required().min(3).max(50),
   address: joi.string().required().min(3).max(50),
@@ -10,4 +10,14 @@ const addCompanySchema = joi.object({
 //   companyHR: joi.string().hex().length(24).required(),
 });
 
-export { addCompanySchema };
+const updateCompanySchema = joi.object({
+  companyName: joi.string().pattern(/^[a-zA-Z0-9 ]{3,20}$/),
+  description: joi.string(),
+  industry: joi.string().min(3).max(50),
+  address: joi.string().min(3).max(50),
+  numberOfEmployees: joi.string().example("11-20"),
+  companyEmail: joi.string().email(),
+//   companyHR: joi.string().hex().length(24),
+});
+
+export { addCompanySchema, updateCompanySchema };

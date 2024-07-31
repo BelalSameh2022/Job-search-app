@@ -25,29 +25,9 @@ import User from "../../../database/models/user.model.js";
 import Company from "../../../database/models/company.model.js";
 
 const addCompany = asyncErrorHandler(async (req, res) => {
-  const loggedUser = await User.findOne({
-    _id: req.user.userId,
-    status: "online",
-  });
-  if (!loggedUser) throw new AppError("You have to login first", 401);
-
-  const {
-    companyName,
-    description,
-    industry,
-    address,
-    numberOfEmployees,
-    companyEmail,
-  } = req.body;
-
   const company = await Company.create({
-    companyName,
-    description,
-    industry,
-    address,
-    numberOfEmployees,
-    companyEmail,
-    companyHR: loggedUser._id,
+    ...req.body,
+    companyHR: req.user.userId,
   });
   if (!company) throw new AppError("Company addition failed", 400);
 
@@ -55,8 +35,13 @@ const addCompany = asyncErrorHandler(async (req, res) => {
 });
 
 const updateCompany = asyncErrorHandler(async (req, res) => {
-  const company = await Company.create(req.body);
+  const company = await Company.findOneAndUpdate(
+    { _id: req.params.companyId, companyHR: req.user.userId },
+    req.body,
+    { new: true }
+  );
   if (!company) throw new AppError("Company not found", 404);
+
   res.status(200).json({ message: "success", company });
 });
 const deleteCompany = asyncErrorHandler(async (req, res) => {
