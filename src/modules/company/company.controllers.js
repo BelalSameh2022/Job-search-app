@@ -21,7 +21,6 @@
 */
 
 import { AppError, asyncErrorHandler } from "../../utils/error.js";
-import User from "../../../database/models/user.model.js";
 import Company from "../../../database/models/company.model.js";
 
 const addCompany = asyncErrorHandler(async (req, res) => {
@@ -44,16 +43,27 @@ const updateCompany = asyncErrorHandler(async (req, res) => {
 
   res.status(200).json({ message: "success", company });
 });
+
 const deleteCompany = asyncErrorHandler(async (req, res) => {
-  const company = await Company.create(req.body);
+  const company = await Company.findOneAndDelete({
+    _id: req.params.companyId,
+    companyHR: req.user.userId,
+  });
   if (!company) throw new AppError("Company not found", 404);
+
   res.status(200).json({ message: "success", company });
 });
+
 const getCompany = asyncErrorHandler(async (req, res) => {
-  const company = await Company.find();
+  const company = await Company.findOne({
+    _id: req.params.companyId,
+    companyHR: req.user.userId,
+  });
   if (!company) throw new AppError("Company not found", 404);
+
   res.status(200).json({ message: "success", company });
 });
+
 const SearchCompanyWithName = asyncErrorHandler(async (req, res) => {
   const company = await Company.find();
   if (!company) throw new AppError("Company not found", 404);

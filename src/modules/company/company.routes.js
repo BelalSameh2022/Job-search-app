@@ -23,4 +23,16 @@ companyRouter.put(
   CC.updateCompany
 );
 
+companyRouter.delete(
+  "/deleteCompany/:companyId",
+  auth("company_HR"),
+  CC.deleteCompany
+);
+
+companyRouter.get(
+  "/getCompany/:companyId",
+  auth("company_HR"),
+  CC.getCompany
+);
+
 export default companyRouter;
