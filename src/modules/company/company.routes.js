@@ -30,9 +30,15 @@ companyRouter.delete(
 );
 
 companyRouter.get(
-  "/getCompany/:companyId",
+  "/:companyId",
   auth("company_HR"),
   CC.getCompany
+);
+
+companyRouter.get(
+  "/",
+  auth("company_HR" || "user"),
+  CC.SearchCompanyWithName
 );
 
 export default companyRouter;

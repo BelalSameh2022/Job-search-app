@@ -65,13 +65,21 @@ const getCompany = asyncErrorHandler(async (req, res) => {
 });
 
 const SearchCompanyWithName = asyncErrorHandler(async (req, res) => {
-  const company = await Company.find();
-  if (!company) throw new AppError("Company not found", 404);
-  res.status(200).json({ message: "success", company });
+  const companies = await Company.find({
+    companyName: { $regex: req.query.name, $options: "i" },
+  });
+  // if (companies.length === 0) throw new AppError("Company not found", 404);
+
+  res.status(200).json({ message: "success", companies });
 });
-const getApplicationsByJob = asyncErrorHandler(async (req, res) => {
-  const company = await Company.find();
+
+const getApplicationsForJob = asyncErrorHandler(async (req, res) => {
+  const company = await Company.findOne({
+    _id: req.params.companyId,
+    companyHR: req.user.userId,
+  });
   if (!company) throw new AppError("Company not found", 404);
+
   res.status(200).json({ message: "success", company });
 });
 
@@ -81,5 +89,5 @@ export {
   deleteCompany,
   getCompany,
   SearchCompanyWithName,
-  getApplicationsByJob,
+  getApplicationsForJob,
 };
