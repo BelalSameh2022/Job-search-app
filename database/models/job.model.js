@@ -7,7 +7,7 @@
         5. jobDescription ( identify what is the job and what i will do i accepted )
         6. technicalSkills ( array of skills, like  **nodejs  , typescript** ,…)
         7. softSkills (array of Skills , like **time management , team worker,**.. )
-        8. addedBy( what is the **compantHrId** who is added this job)
+        8. addedBy( what is the **companyHrId** who is added this job)
 */
 
 import { model, Schema, Types } from "mongoose";
