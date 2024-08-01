@@ -14,4 +14,17 @@ const addJobSchema = joi.object({
   //   addedBy: joi.string().hex().length(24).required(),
 });
 
-export { addJobSchema };
+const updateJobSchema = joi.object({
+  jobTitle: joi.string(),
+  jobLocation: joi.string().valid("onsite", "remotely", "hybrid"),
+  workingTime: joi.string().valid("part-time", "full-time"),
+  seniorityLevel: joi
+    .string()
+    .valid("Junior", "Mid-Level", "Senior", "Team-Lead", "CTO"),
+  jobDescription: joi.string(),
+  technicalSkills: joi.array().items(joi.string()),
+  softSkills: joi.array().items(joi.string()),
+  //   addedBy: joi.string().hex().length(24),
+});
+
+export { addJobSchema, updateJobSchema };

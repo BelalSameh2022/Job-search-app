@@ -53,8 +53,19 @@ const jobSchema = new Schema(
       required: true,
     },
   },
-  { timestamps: true, versionKey: false }
+  {
+    timestamps: true,
+    versionKey: false,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
 );
+
+jobSchema.virtual("company", {
+  ref: "Company",
+  localField: "addedBy",
+  foreignField: "companyHR",
+});
 
 const Job = model("Job", jobSchema);
 

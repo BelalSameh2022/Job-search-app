@@ -33,4 +33,45 @@ const addJob = asyncErrorHandler(async (req, res) => {
   res.status(201).json({ message: "success", job });
 });
 
-export { addJob };
+const updateJob = asyncErrorHandler(async (req, res) => {
+  const job = await Job.findOneAndUpdate(
+    { _id: req.params.jobId, addedBy: req.user.userId },
+    req.body,
+    { new: true }
+  );
+  if (!job) throw new AppError("Job not found", 404);
+
+  res.status(200).json({ message: "success", job });
+});
+
+const deleteJob = asyncErrorHandler(async (req, res) => {
+  const job = await Job.findOneAndDelete({
+    _id: req.params.jobId,
+    addedBy: req.user.userId,
+  });
+  if (!job) throw new AppError("Job not found", 404);
+
+  res.status(200).json({ message: "success", job });
+});
+
+const getJobsWithCompanyInfo = asyncErrorHandler(async (req, res) => {
+  const jobs = await Job.find({}).populate("addedBy").populate("company");
+
+  res.status(200).json({ message: "success", jobs });
+});
+
+const getJobsForSpecificCompany = asyncErrorHandler(async (req, res) => {
+  const jobs = await Job.find({ addedBy: req.params.hrId })
+    .populate("addedBy", "userName email")
+    .populate("company", "companyName companyEmail");
+
+  res.status(200).json({ message: "success", jobs });
+});
+
+export {
+  addJob,
+  updateJob,
+  deleteJob,
+  getJobsWithCompanyInfo,
+  getJobsForSpecificCompany,
+};
