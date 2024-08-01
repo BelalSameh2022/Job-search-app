@@ -23,30 +23,30 @@ const jobSchema = new Schema(
     jobLocation: {
       type: String,
       required: true,
-      enum: ["onsite", "remotely", "hybrid"]
+      enum: ["onsite", "remotely", "hybrid"],
     },
     workingTime: {
       type: String,
       required: true,
-      enum: ["part-time", "full-time"]
+      enum: ["part-time", "full-time"],
     },
     seniorityLevel: {
       type: String,
       required: true,
-      enum: ["Junior", "Mid-Level", "Senior", "Team-Lead", "CTO"]
+      enum: ["Junior", "Mid-Level", "Senior", "Team-Lead", "CTO"],
     },
     jobDescription: {
       type: String,
       required: true,
     },
-    technicalSkills: [{
-      type: String,
+    technicalSkills: {
+      type: [String],
       required: true,
-    }],
-    softSkills: [{
-      type: String,
+    },
+    softSkills: {
+      type: [String],
       required: true,
-    }],
+    },
     addedBy: {
       type: Types.ObjectId,
       ref: "User",
