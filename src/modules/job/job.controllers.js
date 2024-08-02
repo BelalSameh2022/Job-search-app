@@ -29,6 +29,7 @@
 import { AppError, asyncErrorHandler } from "../../utils/error.js";
 import Job from "../../../database/models/job.model.js";
 import Application from "../../../database/models/application.model.js";
+import { createExcelSheet } from "../../utils/excel.js";
 
 const addJob = asyncErrorHandler(async (req, res) => {
   const job = await Job.create({ ...req.body, addedBy: req.user.userId });
@@ -110,6 +111,43 @@ const applyToJob = asyncErrorHandler(async (req, res) => {
   res.status(201).json({ message: "success", application });
 });
 
+const generateApplicantsSheet = asyncErrorHandler(async (req, res) => {
+  const { date = new Date() } = req.query;
+  const job = await Job.findOne({
+    addedBy: req.user.userId,
+    _id: req.params.jobId,
+  });
+  if (!job) throw new AppError("Job not found", 404);
+
+  const targetDate = new Date(date);
+  const startOfDay = new Date(targetDate.setHours(0, 0, 0, 0));
+  const endOfDay = new Date(targetDate.setHours(23, 59, 59, 999));
+
+  const applications = await Application.find({
+    jobId: job._id,
+    createdAt: { $gte: startOfDay, $lte: endOfDay },
+  })
+    .populate("userId", "userName email mobileNumber")
+    .populate("jobId", "jobTitle");
+  if (applications.length === 0)
+    throw new AppError("There are no applicants for this job yet", 404);
+
+  // Prepare data for Excel
+  const data = applications.map((app) => ({
+    Job: app.jobId.jobTitle,
+    Name: app.userId.userName,
+    Email: app.userId.email,
+    Tech_Skills: app.userTechSkills.join(", "),
+    Soft_Skills: app.userSoftSkills.join(", "),
+    Resume: app.userResume,
+    appliedAt: app.createdAt.toISOString().split("T")[0],
+  }));
+
+  createExcelSheet(data, "Applicants", job.jobTitle);
+
+  res.status(200).json({ message: "success", applications });
+});
+
 export {
   addJob,
   updateJob,
@@ -118,4 +156,5 @@ export {
   getJobsForSpecificCompany,
   getJobs,
   applyToJob,
+  generateApplicantsSheet,
 };

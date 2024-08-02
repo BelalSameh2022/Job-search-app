@@ -24,7 +24,7 @@ jobRouter.get(
 );
 
 jobRouter.get(
-  "/:hrId",
+  "/company/:hrId",
   auth("company_HR" || "user"),
   JC.getJobsForSpecificCompany
 );
@@ -35,6 +35,12 @@ jobRouter.post(
   validate(JV.applyToJobSchema),
   auth("user"),
   JC.applyToJob
+);
+
+jobRouter.get(
+  "/applicants/:jobId",
+  auth("company_HR"),
+  JC.generateApplicantsSheet
 );
 
 export default jobRouter;

@@ -30,9 +30,9 @@ const applicationSchema = new Schema(
       required: true,
     },
     userResume: {
-        type: String,
-        required: true,
-    }
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true, versionKey: false }
 );
