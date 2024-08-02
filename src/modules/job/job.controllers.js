@@ -21,6 +21,9 @@
         7. Apply to Job
             - This API will add a new document in the application Collections with the new data
             - apply authorization with the role ( User )
+            
+    ## Bonus Points
+        1. Add an endpoint that collects the applications for a specific company on a specific day and creates an **Excel sheet** with this data
 */
 
 import { AppError, asyncErrorHandler } from "../../utils/error.js";
@@ -29,7 +32,7 @@ import Application from "../../../database/models/application.model.js";
 
 const addJob = asyncErrorHandler(async (req, res) => {
   const job = await Job.create({ ...req.body, addedBy: req.user.userId });
-  if (!job) throw new AppError("failed", 400);
+  if (!job) throw new AppError("fail", 400);
 
   res.status(201).json({ message: "success", job });
 });
@@ -100,8 +103,9 @@ const applyToJob = asyncErrorHandler(async (req, res) => {
     ...req.body,
     jobId: req.params.jobId,
     userId: req.user.userId,
+    userResume: req.file.path,
   });
-  if (!application) throw new AppError("failed", 400);
+  if (!application) throw new AppError("fail", 400);
 
   res.status(201).json({ message: "success", application });
 });
@@ -113,5 +117,5 @@ export {
   getJobsWithCompanyInfo,
   getJobsForSpecificCompany,
   getJobs,
-  applyToJob
+  applyToJob,
 };

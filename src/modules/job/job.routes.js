@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { auth } from "../../middlewares/auth.middleware.js";
 import { validate } from "../../middlewares/validate.middleware.js";
+import { extensions, localUpload } from "../../utils/upload.js";
 import * as JC from "./job.controllers.js";
 import * as JV from "./job.validations.js";
 
@@ -29,7 +30,8 @@ jobRouter.get(
 );
 
 jobRouter.post(
-  "applyTo/:jobId",
+  "/apply/:jobId",
+  localUpload(extensions.pdf, "applicants").single("userResume"),
   validate(JV.applyToJobSchema),
   auth("user"),
   JC.applyToJob
