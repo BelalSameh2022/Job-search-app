@@ -27,4 +27,10 @@ const updateJobSchema = joi.object({
   //   addedBy: joi.string().hex().length(24),
 });
 
-export { addJobSchema, updateJobSchema };
+const applyToJobSchema = joi.object({
+  technicalSkills: joi.array().items(joi.string()).required(),
+  softSkills: joi.array().items(joi.string()).required(),
+  userResume: joi.string().required(),
+});
+
+export { addJobSchema, updateJobSchema, applyToJobSchema };

@@ -16,7 +16,6 @@ app.use(express.static("uploads"));
 app.use("/users", routers.userRouter);
 app.use("/companies", routers.companyRouter);
 app.use("/jobs", routers.jobRouter);
-app.use("/applications", routers.applicationRouter);
 
 app.use(invalidUrlHandler);
 app.use(globalErrorHandler);

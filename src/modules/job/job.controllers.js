@@ -12,7 +12,7 @@
             - apply authorization with the role ( User , Company_HR )
             - send the company name in the query and get this company jobs.
         6. Get all Jobs that match the following filters 
-            - allow user to filter with workingTime , jobLocation , seniorityLevel and jobTitle,technicalSkills
+            - allow user to filter with workingTime , jobLocation , seniorityLevel and jobTitle, technicalSkills
             - one or more of them should applied
             **Example** : if the user selects the   
             **workingTime** is **part-time** and the **jobLocation** is **onsite** 
@@ -25,10 +25,11 @@
 
 import { AppError, asyncErrorHandler } from "../../utils/error.js";
 import Job from "../../../database/models/job.model.js";
+import Application from "../../../database/models/application.model.js";
 
 const addJob = asyncErrorHandler(async (req, res) => {
   const job = await Job.create({ ...req.body, addedBy: req.user.userId });
-  if (!job) throw new AppError("Job addition failed", 400);
+  if (!job) throw new AppError("failed", 400);
 
   res.status(201).json({ message: "success", job });
 });
@@ -68,10 +69,49 @@ const getJobsForSpecificCompany = asyncErrorHandler(async (req, res) => {
   res.status(200).json({ message: "success", jobs });
 });
 
+const getJobs = asyncErrorHandler(async (req, res) => {
+  const {
+    workingTime,
+    jobLocation,
+    seniorityLevel,
+    jobTitle,
+    technicalSkills,
+    page = 1,
+    limit = 10,
+  } = req.query;
+
+  const filter = {};
+  if (workingTime) filter.workingTime = workingTime;
+  if (jobLocation) filter.jobLocation = jobLocation;
+  if (seniorityLevel) filter.seniorityLevel = seniorityLevel;
+  if (jobTitle) filter.jobTitle = jobTitle;
+  if (technicalSkills)
+    filter.technicalSkills = { $in: technicalSkills.split(",") };
+
+  const jobs = await Job.find(filter)
+    .skip((page - 1) * limit)
+    .limit(limit);
+
+  res.status(200).json({ message: "success", jobs });
+});
+
+const applyToJob = asyncErrorHandler(async (req, res) => {
+  const application = await Application.create({
+    ...req.body,
+    jobId: req.params.jobId,
+    userId: req.user.userId,
+  });
+  if (!application) throw new AppError("failed", 400);
+
+  res.status(201).json({ message: "success", application });
+});
+
 export {
   addJob,
   updateJob,
   deleteJob,
   getJobsWithCompanyInfo,
   getJobsForSpecificCompany,
+  getJobs,
+  applyToJob
 };

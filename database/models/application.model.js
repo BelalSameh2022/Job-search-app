@@ -21,16 +21,16 @@ const applicationSchema = new Schema(
       ref: "User",
       required: true,
     },
-    userTechSkills: [{
-      type: String,
+    userTechSkills: {
+      type: [String],
       required: true,
-    }],
-    userSoftSkills: [{
-      type: String,
+    },
+    userSoftSkills: {
+      type: [String],
       required: true,
-    }],
+    },
     userResume: {
-        path: String,
+        type: String,
         required: true,
     }
   },
