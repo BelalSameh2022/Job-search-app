@@ -34,7 +34,6 @@ const checkIfApplied = async (req, res, next) => {
   const { userId } = req.user;
   
   const application = await Application.findOne({ jobId, userId });
-  console.log(application);
   if (application)
     next(
       new AppError(

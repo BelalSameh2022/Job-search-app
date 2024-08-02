@@ -26,6 +26,7 @@
         1. Add an endpoint that collects the applications for a specific company on a specific day and creates an **Excel sheet** with this data
 */
 
+import slugify from "slugify";
 import Job from "../../../database/models/job.model.js";
 import Application from "../../../database/models/application.model.js";
 import { AppError, asyncErrorHandler } from "../../utils/error.js";
@@ -146,7 +147,7 @@ const generateApplicantsSheet = asyncErrorHandler(async (req, res) => {
     appliedAt: app.createdAt.toISOString().split("T")[0],
   }));
 
-  createExcelSheet(data, "Applicants", job.jobTitle);
+  createExcelSheet(data, "Applicants", slugify(job.jobTitle));
 
   res.status(200).json({ message: "success", applications });
 });
