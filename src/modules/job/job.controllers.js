@@ -26,9 +26,9 @@
         1. Add an endpoint that collects the applications for a specific company on a specific day and creates an **Excel sheet** with this data
 */
 
-import { AppError, asyncErrorHandler } from "../../utils/error.js";
 import Job from "../../../database/models/job.model.js";
 import Application from "../../../database/models/application.model.js";
+import { AppError, asyncErrorHandler } from "../../utils/error.js";
 import { createExcelSheet } from "../../utils/excel.js";
 
 const addJob = asyncErrorHandler(async (req, res) => {
@@ -100,10 +100,13 @@ const getJobs = asyncErrorHandler(async (req, res) => {
 });
 
 const applyToJob = asyncErrorHandler(async (req, res) => {
+  const { jobId } = req.params;
+  const { userId } = req.user;
+
   const application = await Application.create({
     ...req.body,
-    jobId: req.params.jobId,
-    userId: req.user.userId,
+    jobId,
+    userId,
     userResume: req.file.path,
   });
   if (!application) throw new AppError("fail", 400);

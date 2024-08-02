@@ -1,6 +1,7 @@
 import { AppError } from "../utils/error.js";
 import User from "../../database/models/user.model.js";
 import Company from "../../database/models/company.model.js";
+import Application from "../../database/models/application.model.js";
 
 const checkIfUser = async (req, res, next) => {
   const { email, mobileNumber } = req.body;
@@ -28,4 +29,20 @@ const checkIfCompany = async (req, res, next) => {
   next();
 };
 
-export { checkIfUser, checkIfCompany };
+const checkIfApplied = async (req, res, next) => {
+  const { jobId } = req.params;
+  const { userId } = req.user;
+  
+  const application = await Application.findOne({ jobId, userId });
+  console.log(application);
+  if (application)
+    next(
+      new AppError(
+        "You're already applied",
+        409
+      )
+    );
+  next();
+};
+
+export { checkIfUser, checkIfCompany, checkIfApplied };

@@ -1,9 +1,10 @@
 import { Router } from "express";
+import * as JC from "./job.controllers.js";
+import * as JV from "./job.validations.js";
 import { auth } from "../../middlewares/auth.middleware.js";
 import { validate } from "../../middlewares/validate.middleware.js";
 import { extensions, localUpload } from "../../utils/upload.js";
-import * as JC from "./job.controllers.js";
-import * as JV from "./job.validations.js";
+import { checkIfApplied } from "../../middlewares/checkIfExists.middleware.js";
 
 const jobRouter = Router();
 
@@ -34,6 +35,7 @@ jobRouter.post(
   localUpload(extensions.pdf, "applicants").single("userResume"),
   validate(JV.applyToJobSchema),
   auth("user"),
+  checkIfApplied,
   JC.applyToJob
 );
 
