@@ -4,23 +4,34 @@ import * as UV from "./user.validations.js";
 import { checkIfUser } from "../../middlewares/checkIfExists.middleware.js";
 import { auth } from "../../middlewares/auth.middleware.js";
 import { validate } from "../../middlewares/validate.middleware.js";
+import { role } from "../../utils/role.js";
 
 const userRouter = Router();
 
-userRouter.post("/signup", checkIfUser, UC.signUp);
-userRouter.post("/signin", UC.signIn);
-userRouter.put("/updateAccount", auth("user"), checkIfUser, UC.updateAccount);
-userRouter.delete("/deleteAccount", auth("user"), UC.deleteAccount);
-userRouter.get("/getAccountData", auth("user"), UC.getAccountData);
+userRouter.post("/signup", validate(UV.signUpSchema), checkIfUser, UC.signUp);
+userRouter.post("/signin", validate(UV.signInSchema), UC.signIn);
+userRouter.put(
+  "/updateAccount",
+  validate(UV.updateAccountSchema),
+  auth(role.user || role.companyHR),
+  checkIfUser,
+  UC.updateAccount
+);
+userRouter.delete(
+  "/deleteAccount",
+  auth(role.user || role.companyHR),
+  UC.deleteAccount
+);
+userRouter.get("/", auth(role.user || role.companyHR), UC.getAccount);
 userRouter.get(
-  "/getAccountDataForAnotherUser/:anotherId",
-  auth("user"),
-  UC.getAccountDataForAnotherUser
+  "/getAnotherAccount/:anotherId",
+  auth(role.user || role.companyHR),
+  UC.getAnotherAccount
 );
 userRouter.patch(
   "/updatePassword",
   validate(UV.updatePasswordSchema),
-  auth("user"),
+  auth(role.user || role.companyHR),
   UC.updatePassword
 );
 userRouter.patch(
@@ -34,9 +45,6 @@ userRouter.patch(
   validate(UV.resetPasswordSchema),
   UC.resetPassword
 );
-userRouter.get(
-  "/getAccountsByRecoveryEmail",
-  UC.getAccountsByRecoveryEmail
-);
+userRouter.get("/getAccountsByRecoveryEmail", UC.getAccountsByRecoveryEmail);
 
 export default userRouter;

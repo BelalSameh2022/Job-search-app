@@ -106,7 +106,6 @@ const updateAccount = asyncErrorHandler(async (req, res) => {
     {
       firstName,
       lastName,
-      userName: firstName + " " + lastName,
       email,
       mobileNumber,
       recoveryEmail,
@@ -115,6 +114,25 @@ const updateAccount = asyncErrorHandler(async (req, res) => {
     { new: true }
   );
   if (!user) throw new AppError("User is not found", 404);
+
+  if (firstName) {
+    let updatedUserName = user.userName.split(" ");
+    updatedUserName[0] = firstName;
+    user.userName = updatedUserName.join(" ");
+    await user.save();
+  }
+
+  if (lastName) {
+    let updatedUserName = user.userName.split(" ");
+    updatedUserName[1] = lastName;
+    user.userName = updatedUserName.join(" ");
+    await user.save();
+  }
+
+  if (firstName && lastName) {
+    user.userName = firstName + " " + lastName;
+    await user.save();
+  }
 
   res.status(200).json({ message: "success", user });
 });
@@ -128,7 +146,7 @@ const deleteAccount = asyncErrorHandler(async (req, res) => {
   res.status(200).json({ message: "success", user });
 });
 
-const getAccountData = asyncErrorHandler(async (req, res) => {
+const getAccount = asyncErrorHandler(async (req, res) => {
   const { userId } = req.user;
 
   const user = await User.findOne({ _id: userId, status: "online" });
@@ -137,14 +155,14 @@ const getAccountData = asyncErrorHandler(async (req, res) => {
   res.status(200).json({ message: "success", user });
 });
 
-const getAccountDataForAnotherUser = asyncErrorHandler(async (req, res) => {
+const getAnotherAccount = asyncErrorHandler(async (req, res) => {
   const { userId } = req.user;
   const { anotherId } = req.params;
 
   const user = await User.findOne({ _id: userId, status: "online" });
   if (!user) throw new AppError("Unauthorized", 401);
 
-  const data = await User.findById(anotherId);
+  const data = await User.findById(anotherId, "-password -OTP -confirmOTP");
   if (!data) throw new AppError("User is not found", 404);
 
   res.status(200).json({ message: "success", data });
@@ -189,7 +207,7 @@ const confirmOtp = asyncErrorHandler(async (req, res) => {
 
   const user = await User.findOneAndUpdate(
     { OTP },
-    { OTP: null, confirmOTP: true },
+    { OTP: "", confirmOTP: true },
     { new: true }
   );
   if (!user) throw new AppError("Invalid OTP", 400);
@@ -227,8 +245,8 @@ export {
   signIn,
   updateAccount,
   deleteAccount,
-  getAccountData,
-  getAccountDataForAnotherUser,
+  getAccount,
+  getAnotherAccount,
   updatePassword,
   forgetPassword,
   confirmOtp,
