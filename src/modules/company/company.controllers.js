@@ -22,6 +22,8 @@
 
 import { AppError, asyncErrorHandler } from "../../utils/error.js";
 import Company from "../../../database/models/company.model.js";
+import Job from "../../../database/models/job.model.js";
+import Application from "../../../database/models/application.model.js";
 
 const addCompany = asyncErrorHandler(async (req, res) => {
   const company = await Company.create({
@@ -74,13 +76,16 @@ const SearchCompanyWithName = asyncErrorHandler(async (req, res) => {
 });
 
 const getApplicationsForJob = asyncErrorHandler(async (req, res) => {
-  const company = await Company.findOne({
-    _id: req.params.companyId,
-    companyHR: req.user.userId,
-  });
-  if (!company) throw new AppError("Company not found", 404);
+  const { jobId } = req.params;
+  const { userId } = req.user;
 
-  res.status(200).json({ message: "success", company });
+  const job = await Job.findOne({ _id: jobId, addedBy: userId });
+  if (!job) throw new AppError("Job not found", 404);
+
+  const applications = await Application.find({ jobId: job._id });
+  if (applications.length === 0) throw new AppError("There are no applicants for this job yet", 404);
+
+  res.status(200).json({ message: "success", applications });
 });
 
 export {

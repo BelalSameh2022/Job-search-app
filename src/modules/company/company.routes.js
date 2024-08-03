@@ -4,13 +4,14 @@ import * as CV from "./company.validations.js";
 import { auth } from "../../middlewares/auth.middleware.js";
 import { validate } from "../../middlewares/validate.middleware.js";
 import { checkIfCompany } from "../../middlewares/checkIfExists.middleware.js";
+import { role } from "../../utils/role.js";
 
 const companyRouter = Router();
 
 companyRouter.post(
   "/addCompany",
   validate(CV.addCompanySchema),
-  auth("company_HR"),
+  auth(role.companyHR),
   checkIfCompany,
   CC.addCompany
 );
@@ -18,27 +19,29 @@ companyRouter.post(
 companyRouter.put(
   "/updateCompany/:companyId",
   validate(CV.updateCompanySchema),
-  auth("company_HR"),
+  auth(role.companyHR),
   checkIfCompany,
   CC.updateCompany
 );
 
 companyRouter.delete(
   "/deleteCompany/:companyId",
-  auth("company_HR"),
+  auth(role.companyHR),
   CC.deleteCompany
 );
 
-companyRouter.get(
-  "/:companyId",
-  auth("company_HR"),
-  CC.getCompany
-);
+companyRouter.get("/getCompany/:companyId", auth(role.companyHR), CC.getCompany);
 
 companyRouter.get(
   "/",
-  auth("company_HR" || "user"),
+  auth(role.companyHR || role.user),
   CC.SearchCompanyWithName
+);
+
+companyRouter.get(
+  "/getApplicationsForJob/:jobId",
+  auth(role.companyHR),
+  CC.getApplicationsForJob
 );
 
 export default companyRouter;
